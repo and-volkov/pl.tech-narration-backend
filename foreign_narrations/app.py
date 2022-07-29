@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi import status
 
-from .settings import api_settings
+from settings import api_settings
 
 
 app = FastAPI(
@@ -15,8 +15,7 @@ async def test():
     return status.HTTP_200_OK
 
 
-def run():
-    """Run the API using Uvicorn"""
+if __name__ == '__main__':
     uvicorn.run(
         app,
         host=api_settings.host,
