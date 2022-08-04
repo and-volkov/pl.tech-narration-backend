@@ -1,37 +1,80 @@
-from datetime import datetime as dt
+import asyncio
+from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, status, Response
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, status, Response, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, HTMLResponse
 
 from settings import api_settings
-from database import shows_history_collection, shows_collection
-from models import ShowHistory, Show, Narration
-
+from models import ShowHistory
+from handlers import (
+    get_show,
+    get_show_narration,
+    insert_new_running_show
+)
 
 app = FastAPI(title=api_settings.title)
 
 
+html_path = Path(__file__).with_name('test.html')
+with open(html_path, 'r') as f:
+    test_html = f.read()
+
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def broadcast(self, show: ShowHistory):
+        for connection in self.active_connections:
+            await connection.send_json(show.json())
+
+
+manager = ConnectionManager()
+
+
 @app.get('/')
-async def test():
-    return status.HTTP_200_OK
+async def socket_connect():
+    return HTMLResponse(test_html)
 
 
-@app.post('/start/{show_name}', response_model=ShowHistory)
-def get_current_show(show_name: str) -> Response:
-    show = shows_collection.find_one({'name': show_name.upper()})
-    show = Show(**show)
-    available_languages = list(show.narrations.keys())
-    print(available_languages)
-    print(show)
-    show_len = show.narrations.get('eng').file_length_in_secs
-    current_show = ShowHistory(
-        show_name=show.name,
-        available_languages=available_languages,
-        end_time=int(dt.timestamp(dt.now())) + show_len,
-    )
-    # shows_history_collection.insert_one(current_show.dict())
-    return Response(current_show.json(), status_code=200)
+@app.websocket('/ws/{client_id}')
+async def socket_connect(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = get_show()
+            if data:
+                await manager.broadcast(data)
+            await asyncio.sleep(1)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+
+
+@app.post('/start/{show_name}', responses={
+    200: {
+        'description': 'Running show accepted'
+    }
+})
+async def show_start(show_name: str) -> Response:
+    insert_new_running_show(show_name=show_name)
+    await manager.broadcast(get_show())
+    return status.HTTP_201_CREATED
+
+
+@app.get('/narrations', response_model=ShowHistory)
+async def get_current_show():
+    show = get_show()
+    if show:
+        return Response(show.json(), status_code=200)
+    return Response('No show running now', status_code=204)
 
 
 @app.get(
@@ -47,18 +90,8 @@ def get_current_show(show_name: str) -> Response:
 async def send_narration_file(
     language_tag: str = 'eng',
 ) -> FileResponse | Response:
-
-    last_show = (
-        shows_history_collection.find().sort('end_time', -1).limit(1)[0]
-    )
-    if last_show.get('end_time') > dt.now().timestamp():
-        show = shows_collection.find_one({'name': last_show.get('show_name')})
-        narration = show.get('narrations').get(language_tag)
-        file = narration.get('file_path')
-        return FileResponse(file, media_type='audio/mp3')
-    return Response(
-        'No show currently running', status_code=status.HTTP_403_FORBIDDEN
-    )
+    file = get_show_narration(language_tag)
+    return FileResponse(file, media_type='audio/mp3')
 
 
 if __name__ == '__main__':
