@@ -24,7 +24,8 @@ class MongoSettings(BaseSettings):
     auth_source = 'AUTH_SOURCE'
     auth_mechanism = 'AUTH_MECHANISM'
     database: str = 'foreign-narrations'
-    collection: str = 'shows'
+    shows_collection: str = 'shows'
+    shows_history_collection: str = 'shows_history'
 
     class Config(BaseSettings.Config):
         env_prefix = 'MONGO_'

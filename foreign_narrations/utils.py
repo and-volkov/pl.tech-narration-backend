@@ -30,7 +30,9 @@ for folder in sub_folders:
             file_extension=file_extension,
             record_created=dt.today(),
         )
-    record = Show(name=folder.split('/')[-1], narrations=narrations).dict()
+    record = Show(
+        name=folder.split('/')[-1].lower(), narrations=narrations
+    ).dict()
     shows_collection.replace_one(
         filter={'name': record.get('name')}, replacement=record, upsert=True
     )

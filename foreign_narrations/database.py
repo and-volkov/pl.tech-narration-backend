@@ -13,4 +13,7 @@ client = MongoClient(
 
 database = client[mongo_settings.database]
 
-shows_collection = database.get_collection(mongo_settings.collection)
+shows_collection = database.get_collection(mongo_settings.shows_collection)
+shows_history_collection = database.get_collection(
+    mongo_settings.shows_history_collection
+)
