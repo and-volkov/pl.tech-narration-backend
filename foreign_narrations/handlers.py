@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 
 from database import shows_collection, shows_history_collection
-from models import Narration, Show, ShowHistory
+from models import Show, ShowHistory
 
 
 def insert_new_running_show(show_name: str) -> ShowHistory:
@@ -19,12 +19,15 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
 
 
 def get_show() -> ShowHistory | None:
-    last_show = (
-        shows_history_collection.find().sort('end_time', -1).limit(1)[0]
-    )
-    last_show = ShowHistory(**last_show)
-    if last_show.end_time > dt.now().timestamp():
-        return last_show
+    try:
+        last_show = (
+            shows_history_collection.find().sort('end_time', -1).limit(1)[0]
+        )
+        last_show = ShowHistory(**last_show)
+        if last_show.end_time > dt.now().timestamp():
+            return last_show
+    except IndexError:
+        return None
 
 
 def get_show_narration(language_tag: str) -> str:
