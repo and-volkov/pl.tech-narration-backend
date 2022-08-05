@@ -3,7 +3,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, status, Response, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse
 
 from settings import api_settings
 from models import ShowHistory
