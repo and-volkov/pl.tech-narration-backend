@@ -7,11 +7,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 
 from settings import api_settings
 from models import ShowHistory
-from handlers import (
-    get_show,
-    get_show_narration,
-    insert_new_running_show
-)
+from handlers import get_show, get_show_narration, insert_new_running_show
 
 app = FastAPI(title=api_settings.title)
 
@@ -29,41 +25,36 @@ class ConnectionManager:
         await websocket.accept()
         self.active_connections.append(websocket)
 
-    def disconnect(self, websocket: WebSocket):
+    async def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
 
     async def broadcast(self, show: ShowHistory):
         for connection in self.active_connections:
+            await asyncio.sleep(0.001)
             await connection.send_json(show.json())
 
 
 manager = ConnectionManager()
 
 
-@app.get('/')
-async def socket_connect():
-    return HTMLResponse(test_html)
-
-
 @app.websocket('/ws/{client_id}')
-async def socket_connect(websocket: WebSocket):
+async def send_show_notification(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            data = get_show()
-            if data:
-                await manager.broadcast(data)
-            await asyncio.sleep(1)
+            msg = await websocket.receive_text()
+            if msg.lower() == 'close':
+                await manager.disconnect(websocket)
+                await websocket.close()
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
 
 
-@app.post('/start/{show_name}', responses={
-    200: {
-        'description': 'Running show accepted'
-    }
-})
-async def show_start(show_name: str) -> Response:
+@app.post(
+    '/start/{show_name}',
+    responses={200: {'description': 'Running show accepted'}},
+)
+async def get_start_command(show_name: str) -> Response:
     insert_new_running_show(show_name=show_name)
     await manager.broadcast(get_show())
     return status.HTTP_201_CREATED
