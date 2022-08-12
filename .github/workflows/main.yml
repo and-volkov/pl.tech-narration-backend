@@ -58,7 +58,7 @@ jobs:
             docker-compose stop
             docker-compose rm app
             docker pull ${{ secrets.DOCKER_USERNAME }}/narrations-app:latest
-            touch .env
+            touch development.env
             echo API_HOST=${{ secrets.API_HOST }} >> development.env
             echo API_PORT=${{ secrets.API_PORT }} >> development.env
             echo MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} >> development.env
