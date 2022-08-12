@@ -20,7 +20,7 @@ for folder in sub_folders:
         file_path = os.path.abspath(folder) + '/' + file
         file_size_in_mb = round(os.stat(file_path).st_size / 1024**2, 2)
         with audioread.audio_open(file_path) as audio:
-            file_length_in_secs = round(audio.duration * 1000)
+            file_length_in_secs = round(audio.duration)
         narrations[language_tag] = Narration(
             file_name=file,
             file_path=file_path,
