@@ -54,7 +54,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            cd /planetarium-tech/narrations
+            cd /home/global/planetarium-tech/narrations
             sudo docker-compose stop
             sudo docker-compose rm app
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foreign-narrations:latest
