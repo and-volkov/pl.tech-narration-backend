@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - narration-db:/data/db
+  app:
+    image: andvolkov/narrations-app:latest
+    restart: unless-stopped
+    command:
+      uvicorn app:app --reload --workers 4 --host 0.0.0.0 --port 5010
+    volumes:
+      - /Users/and_volkov/Dev/pl.tech-narration-backend/data:/data
+    depends_on:
+      - db
+    env_file:
+      - ../foreign_narrations/development.env
+  nginx:
+    image: nginx:1.21.3-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+volumes:
+  narration-db:

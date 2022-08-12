@@ -4,12 +4,13 @@ import pydantic
 class BaseSettings(pydantic.BaseSettings):
     class Config:
         env_file = 'development.env'
+        env_file_encoding = 'utf-8'
 
 
 class ApiSettings(BaseSettings):
     title: str = 'Planetarium Foreign Narrations API'
-    host: str = 'HOST'
-    port: int = 'PORT'
+    host = 'HOST'
+    port = 5010
     log_level: str = 'INFO'
 
     class Config:
@@ -18,7 +19,7 @@ class ApiSettings(BaseSettings):
 
 class MongoSettings(BaseSettings):
     host = 'HOST'
-    port: int = 'PORT'
+    port = 27017
     username: str = 'USERNAME'
     password: str = 'PASSWORD'
     auth_source = 'AUTH_SOURCE'

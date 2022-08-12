@@ -2,21 +2,45 @@ import asyncio
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, status, Response, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from settings import api_settings
-from models import ShowHistory
 from handlers import get_show, get_show_narration, insert_new_running_show
+from models import ShowHistory
+from settings import api_settings
 
 app = FastAPI(title=api_settings.title)
 
 
+origins = [
+    "http://10.10.120.140",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# TODO Delete after tests
 html_path = Path(__file__).with_name('test.html')
 with open(html_path, 'r') as f:
     test_html = f.read()
 
+#
+# @app.get('/')
+# def test_html():
+#     return HTMLResponse(test_html)
 
+
+# TODO separate manager
 class ConnectionManager:
     def __init__(self):
         self.active_connections: list[WebSocket] = []
@@ -50,6 +74,7 @@ async def send_show_notification(websocket: WebSocket):
         await manager.disconnect(websocket)
 
 
+# TODO responses
 @app.post(
     '/start/{show_name}',
     responses={200: {'description': 'Running show accepted'}},
@@ -60,6 +85,7 @@ async def get_start_command(show_name: str) -> Response:
     return status.HTTP_201_CREATED
 
 
+# TODO Responses
 @app.get('/narrations', response_model=ShowHistory)
 async def get_current_show():
     show = get_show()
@@ -68,6 +94,7 @@ async def get_current_show():
     return Response('No show running now', status_code=204)
 
 
+# TODO Responses
 @app.get(
     '/narrations/{language_tag}',
     responses={
@@ -85,6 +112,7 @@ async def send_narration_file(
     return FileResponse(file, media_type='audio/mp3')
 
 
+# TODO Make run
 if __name__ == '__main__':
     uvicorn.run(
         'app:app',

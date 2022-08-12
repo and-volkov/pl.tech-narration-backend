@@ -4,10 +4,9 @@ from datetime import datetime as dt
 import audioread
 
 from database import shows_collection
-from models import Show, Narration
+from models import Narration, Show
 
-
-DATA_DIR = '../data'
+DATA_DIR = '../data/'
 
 sub_folders = [f.path for f in os.scandir(DATA_DIR) if f.is_dir()]
 
@@ -21,7 +20,7 @@ for folder in sub_folders:
         file_path = os.path.abspath(folder) + '/' + file
         file_size_in_mb = round(os.stat(file_path).st_size / 1024**2, 2)
         with audioread.audio_open(file_path) as audio:
-            file_length_in_secs = round(audio.duration)
+            file_length_in_secs = round(audio.duration * 1000)
         narrations[language_tag] = Narration(
             file_name=file,
             file_path=file_path,
