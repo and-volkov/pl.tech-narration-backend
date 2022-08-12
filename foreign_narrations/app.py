@@ -29,17 +29,6 @@ app.add_middleware(
 )
 
 
-# TODO Delete after tests
-html_path = Path(__file__).with_name('test.html')
-with open(html_path, 'r') as f:
-    test_html = f.read()
-
-#
-# @app.get('/')
-# def test_html():
-#     return HTMLResponse(test_html)
-
-
 # TODO separate manager
 class ConnectionManager:
     def __init__(self):
@@ -61,7 +50,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@app.websocket('/ws/{client_id}')
+@app.websocket('/ws')
 async def send_show_notification(websocket: WebSocket):
     await manager.connect(websocket)
     try:
