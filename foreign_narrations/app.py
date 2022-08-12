@@ -13,7 +13,7 @@ app = FastAPI(title=api_settings.title)
 
 
 origins = [
-    "http://10.10.120.140",
+    "http://10.10.120.140:3000",
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:3000"
@@ -43,7 +43,7 @@ class ConnectionManager:
     async def broadcast(self, show: ShowHistory):
         for connection in self.active_connections:
             await asyncio.sleep(0.001)
-            await connection.send_json(show.json())
+            await connection.send_json(show.json(), mode='text')
 
 
 manager = ConnectionManager()
