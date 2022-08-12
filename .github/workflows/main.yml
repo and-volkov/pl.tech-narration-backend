@@ -57,5 +57,14 @@ jobs:
             cd /home/global/planetarium-tech/narrations
             docker-compose stop
             docker-compose rm app
-            docker pull ${{ secrets.DOCKER_USERNAME }}/foreign-narrations:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/narrations-app:latest
+            touch .env
+            echo API_HOST=${{ secrets.API_HOST }} >> development.env
+            echo API_PORT=${{ secrets.API_PORT }} >> development.env
+            echo MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} >> development.env
+            echo MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} >> development.env
+            echo MONGO_HOST=${{ secrets.MONGO_HOST }} >> development.env
+            echo MONGO_PORT=${{ secrets.MONGO_PORT }} >> development.env
+            echo MONGO_AUTH_SOURCE=${{ secrets.MONGO_AUTH_SOURCE }} >> development.env
+            echo MONGO_AUTH_MECHANISM=${{ secrets.MONGO_AUTH_MECHANISM }} >> development.env
             docker-compose up -d
