@@ -8,7 +8,7 @@ class Narration(BaseModel):
     file_name: str
     file_path: str
     file_size_in_mb: float
-    file_length_in_secs: int
+    file_length_miliseconds: int
     file_extension: str
     record_created: dt
 

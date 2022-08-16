@@ -8,7 +8,7 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
     show = shows_collection.find_one({'name': show_name.lower()})
     show = Show(**show)
     available_languages = list(show.narrations.keys())
-    show_len = show.narrations.get('eng').file_length_in_secs
+    show_len = show.narrations.get('eng').file_length_miliseconds
     current_show = ShowHistory(
         show_name=show.name,
         available_languages=available_languages,
