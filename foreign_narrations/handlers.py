@@ -8,11 +8,11 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
     show = shows_collection.find_one({'name': show_name.lower()})
     show = Show(**show)
     available_languages = list(show.narrations.keys())
-    show_len = show.narrations.get('eng').file_length_miliseconds
+    show_len = show.narrations.get('eng').file_length_ms
     current_show = ShowHistory(
         show_name=show.name,
         available_languages=available_languages,
-        end_time=int(dt.timestamp(dt.now())) + show_len,
+        end_time_ms=int(dt.timestamp(dt.now()) * 1000) + show_len,  # milisecs
     )
     shows_history_collection.insert_one(current_show.dict())
     return current_show
@@ -24,7 +24,7 @@ def get_show() -> ShowHistory | None:
             shows_history_collection.find().sort('end_time', -1).limit(1)[0]
         )
         last_show = ShowHistory(**last_show)
-        if last_show.end_time > dt.now().timestamp():
+        if last_show.end_time_ms > dt.now().timestamp():
             return last_show
     except IndexError:
         return None

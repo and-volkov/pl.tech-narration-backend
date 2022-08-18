@@ -8,7 +8,7 @@ class Narration(BaseModel):
     file_name: str
     file_path: str
     file_size_in_mb: float
-    file_length_miliseconds: int
+    file_length_ms: int
     file_extension: str
     record_created: dt
 
@@ -25,5 +25,5 @@ class Show(BaseModel):
 class ShowHistory(BaseModel):
     show_name: str
     available_languages: list[str]
-    start_time: int = int(dt.timestamp(dt.now()))
-    end_time: int = start_time
+    start_time_ms: int = int(dt.timestamp(dt.now())) * 1000
+    end_time_ms: int = start_time_ms
