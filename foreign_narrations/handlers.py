@@ -16,6 +16,7 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
         start_time_ms=start_time,
         end_time_ms=start_time + show_len,  # milisecs
     )
+    shows_history_collection.drop()
     shows_history_collection.insert_one(current_show.dict())
     return current_show
 
@@ -23,7 +24,9 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
 def get_show() -> ShowHistory | None:
     try:
         last_show = (
-            shows_history_collection.find().sort("end_time", -1).limit(1)[0]
+            shows_history_collection.find()
+            .sort({"end_time": -1, "_id": -1})
+            .limit(1)[0]
         )
         last_show = ShowHistory(**last_show)
         if last_show.end_time_ms > dt.now().timestamp():
