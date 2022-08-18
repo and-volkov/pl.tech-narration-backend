@@ -23,15 +23,11 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
 
 def get_show() -> ShowHistory | None:
     try:
-        last_show = (
-            shows_history_collection.find()
-            .sort({"end_time": -1, "_id": -1})
-            .limit(1)[0]
-        )
+        last_show = shows_history_collection.find()[0]
         last_show = ShowHistory(**last_show)
-        if last_show.end_time_ms > dt.now().timestamp():
+        if last_show.end_time_ms > int(dt.now().timestamp()) * 1000:
             return last_show
-    except IndexError:
+    except Exception:
         return None
 
 
