@@ -25,5 +25,5 @@ class Show(BaseModel):
 class ShowHistory(BaseModel):
     show_name: str
     available_languages: list[str]
-    start_time_ms: int = int(dt.timestamp(dt.now())) * 1000
-    end_time_ms: int = start_time_ms
+    start_time_ms: int
+    end_time_ms: int

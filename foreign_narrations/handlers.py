@@ -9,10 +9,12 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
     show = Show(**show)
     available_languages = list(show.narrations.keys())
     show_len = show.narrations.get("eng").file_length_ms
+    start_time = int(dt.timestamp(dt.now())) * 1000
     current_show = ShowHistory(
         show_name=show.name,
         available_languages=available_languages,
-        end_time_ms=int(dt.timestamp(dt.now()) * 1000) + show_len,  # milisecs
+        start_time_ms=start_time,
+        end_time_ms=start_time + show_len,  # milisecs
     )
     shows_history_collection.insert_one(current_show.dict())
     return current_show
