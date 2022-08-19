@@ -74,7 +74,9 @@ async def get_start_command(show_name: str) -> Response:
 
 
 # TODO Responses
-@app.get("/api/narrations", response_model=ShowHistory)
+@app.get(
+    "/api/narrations", response_model=ShowHistory, response_class=Response
+)
 async def get_current_show():
     show = get_show()
     if show:
