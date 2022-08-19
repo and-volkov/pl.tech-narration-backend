@@ -49,7 +49,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@app.websocket("/ws")
+@app.websocket("/api/ws")
 async def send_show_notification(websocket: WebSocket):
     await manager.connect(websocket)
     try:
@@ -64,7 +64,7 @@ async def send_show_notification(websocket: WebSocket):
 
 # TODO responses
 @app.post(
-    "/start/{show_name}",
+    "/api/start/{show_name}",
     responses={200: {"description": "Running show accepted"}},
 )
 async def get_start_command(show_name: str) -> Response:
@@ -74,7 +74,7 @@ async def get_start_command(show_name: str) -> Response:
 
 
 # TODO Responses
-@app.get("/narrations", response_model=ShowHistory)
+@app.get("/api/narrations", response_model=ShowHistory)
 async def get_current_show():
     show = get_show()
     if show:
@@ -84,7 +84,7 @@ async def get_current_show():
 
 # TODO Responses
 @app.get(
-    "/narrations/{language_tag}",
+    "/api/narrations/{language_tag}",
     responses={
         200: {
             "content": {"audio/mp3": {}},
