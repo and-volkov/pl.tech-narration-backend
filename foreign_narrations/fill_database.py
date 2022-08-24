@@ -20,7 +20,7 @@ def prepare_record(filenames: list[str]) -> dict:
         try:
             with audioread.audio_open(file_path) as audio:
                 file_length_in_ms = audio.duration * 1000
-        except audioread.exceptions.NoBackendError as e:
+        except audioread.exceptions.NoBackendError:
             pass
 
         narrations[language_tag] = Narration(
