@@ -6,7 +6,6 @@ import audioread
 from database import shows_collection
 from models import Narration, Show
 
-
 DATA_DIR = "../data/"
 
 
