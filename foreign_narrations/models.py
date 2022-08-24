@@ -1,5 +1,3 @@
-from datetime import datetime as dt
-
 from pydantic import BaseModel
 from pydantic_mongo import ObjectIdField
 
@@ -10,7 +8,7 @@ class Narration(BaseModel):
     file_size_in_mb: float
     file_length_ms: int
     file_extension: str
-    record_created: dt
+    record_created: str
 
 
 class Show(BaseModel):
