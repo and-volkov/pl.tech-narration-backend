@@ -17,8 +17,11 @@ def prepare_record(filenames: list[str]) -> dict:
         file_extension = file.split(".")[1].strip()
         file_path = os.path.abspath(dirpath) + "/" + file
         file_size_in_mb = round(os.stat(file_path).st_size / 1024**2, 2)
-        with audioread.audio_open(file_path) as audio:
-            file_length_in_ms = audio.duration * 1000
+        try:
+            with audioread.audio_open(file_path) as audio:
+                file_length_in_ms = audio.duration * 1000
+        except audioread.exceptions.NoBackendError as e:
+            pass
 
         narrations[language_tag] = Narration(
             file_name=file,
