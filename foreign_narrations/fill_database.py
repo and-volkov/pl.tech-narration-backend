@@ -6,32 +6,40 @@ import audioread
 from database import shows_collection
 from models import Narration, Show
 
+
 DATA_DIR = "../data/"
 
-sub_folders = [f.path for f in os.scandir(DATA_DIR) if f.is_dir()]
 
-for folder in sub_folders:
-    filenames = next(os.walk(folder), (None, None, []))[2]  # files
+def prepare_record(filenames: list[str]) -> dict:
     narrations = dict()
+
     for file in filenames:
-        f = file.split("_")[-1]
-        language_tag = f.split(".")[0].strip()
-        file_extension = f.split(".")[1].strip()
-        file_path = os.path.abspath(folder) + "/" + file
+        language_tag = file.split("_")[1].split(".")[0].strip()
+        file_extension = file.split(".")[1].strip()
+        file_path = os.path.abspath(dirpath) + "/" + file
         file_size_in_mb = round(os.stat(file_path).st_size / 1024**2, 2)
         with audioread.audio_open(file_path) as audio:
             file_length_in_ms = audio.duration * 1000
+
         narrations[language_tag] = Narration(
             file_name=file,
             file_path=file_path,
             file_size_in_mb=file_size_in_mb,
             file_length_ms=file_length_in_ms,
             file_extension=file_extension,
-            record_created=dt.today(),
+            record_created=dt.strftime(dt.now(), "%d.%m.%y - %H:%M"),
         )
-    record = Show(
-        name=folder.split("/")[-1].lower(), narrations=narrations
-    ).dict()
-    shows_collection.replace_one(
-        filter={"name": record.get("name")}, replacement=record, upsert=True
-    )
+    show_name = filenames[0].split("_")[0].lower()
+    return Show(name=show_name, narrations=narrations).dict()
+
+
+for dirpath, dirname, filenames in os.walk(DATA_DIR):
+    if filenames:
+        record = prepare_record(filenames)
+        shows_collection.replace_one(
+            filter={
+                'name': record.get('name'),
+            },
+            replacement=record,
+            upsert=True,
+        )
