@@ -98,12 +98,6 @@ async def get_current_show():
 @app.get(
     '/api/narrations/{language_tag}',
     responses={
-        200: {
-            'content': {'audio/mp3': {}},
-            'description': 'Return narration audio file',
-            'Cache-Control': 'max-age=10',
-            'Age': '10',
-        },
         403: {'description': 'Nothing to return. You die alone'},
     },
 )
@@ -111,7 +105,13 @@ async def send_narration_file(
     language_tag: str = 'eng',
 ) -> FileResponse | Response:
     file = get_show_narration(language_tag)
-    return FileResponse(file, media_type='audio/mp3')
+    return FileResponse(
+        file, media_type='audio/mp3',
+        headers={'content': {'audio/mp3': {}},
+                 'description': 'Return narration audio file',
+                 'Cache-Control': 'max-age=10',
+                 'Age': '10'}
+    )
 
 
 # TODO Make run
