@@ -79,17 +79,18 @@ async def get_start_command(show_name: str) -> Response:
     '/api/narrations',
     response_model=ShowHistory,
     response_class=Response,
-    responses={
-        200: {
-            'Cache-Control': 'max-age=10',
-            'Age': '10',
-        }
-    },
 )
 async def get_current_show():
     show = get_show()
     if show:
-        return Response(show.json(), status_code=200)
+        return Response(
+            show.json(),
+            status_code=200,
+            headers={
+                'Cache-Control': 'max-age=10',
+                'Age': '10',
+            }
+        )
     return Response('No show running now', status_code=204)
 
 
