@@ -81,8 +81,6 @@ async def get_start_command(show_name: str) -> Response:
     response_class=Response,
     responses={
         200: {
-            'content': {'audio/mp3': {}},
-            'description': 'Return narration audio file',
             'Cache-Control': 'max-age=10',
             'Age': '10',
         }
