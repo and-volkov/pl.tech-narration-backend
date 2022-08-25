@@ -107,7 +107,7 @@ async def send_narration_file(
     file = get_show_narration(language_tag)
     return FileResponse(
         file, media_type='audio/mp3',
-        headers={'content': {'audio/mp3': {}},
+        headers={'content': 'audio/mp3',
                  'description': 'Return narration audio file',
                  'Cache-Control': 'max-age=10',
                  'Age': '10'}
