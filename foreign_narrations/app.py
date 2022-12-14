@@ -14,6 +14,7 @@ app = FastAPI(title=api_settings.title)
 
 origins = [
     '*',
+    'http://127.0.0.1',
     'http://10.10.120.140:3000',
     'http://localhost',
     'http://localhost:8080',
