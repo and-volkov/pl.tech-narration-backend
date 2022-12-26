@@ -37,6 +37,7 @@ class ConnectionManager:
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
+        await get_current_show()
         self.active_connections.append(websocket)
 
     async def disconnect(self, websocket: WebSocket):
