@@ -40,7 +40,7 @@ for dirpath, dirname, filenames in os.walk(DATA_DIR):
         record = prepare_record(filenames)
         shows_collection.replace_one(
             filter={
-                'name': record.get('name'),
+                "name": record.get("name"),
             },
             replacement=record,
             upsert=True,
