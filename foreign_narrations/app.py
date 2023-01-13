@@ -5,7 +5,12 @@ from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from handlers import get_show, get_show_narration, insert_new_running_show
+from handlers import (
+    get_show,
+    get_show_narration,
+    insert_new_running_show,
+    remove_running_show,
+)
 from models import ShowHistory
 from settings import api_settings
 
@@ -14,8 +19,6 @@ app = FastAPI(title=api_settings.title)
 
 origins = [
     "*",
-    "http://127.0.0.1",
-    "http://10.10.120.140:3000",
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:3000",
@@ -74,6 +77,12 @@ async def get_start_command(show_name: str) -> Response:
     insert_new_running_show(show_name=show_name)
     await manager.broadcast(get_show())
     return status.HTTP_201_CREATED
+
+
+@app.post("/api/stop/", responses={204: {"description": "Show stopped"}})
+async def get_stop_command() -> Response:
+    remove_running_show()
+    return status.HTTP_204_NO_CONTENT
 
 
 # TODO Responses

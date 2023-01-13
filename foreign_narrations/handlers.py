@@ -21,6 +21,10 @@ def insert_new_running_show(show_name: str) -> ShowHistory:
     return current_show
 
 
+def remove_running_show() -> None:
+    shows_history_collection.drop()
+
+
 def get_show() -> ShowHistory | None:
     try:
         last_show = shows_history_collection.find()[0]
