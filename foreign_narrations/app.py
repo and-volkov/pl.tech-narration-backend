@@ -5,12 +5,8 @@ from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from handlers import (
-    get_show,
-    get_show_narration,
-    insert_new_running_show,
-    remove_running_show,
-)
+from handlers import (get_show, get_show_narration, insert_new_running_show,
+                      remove_running_show)
 from models import ShowHistory
 from settings import api_settings
 
