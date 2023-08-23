@@ -64,7 +64,6 @@ async def send_show_notification(websocket: WebSocket):
         await manager.disconnect(websocket)
 
 
-# TODO responses
 @app.post(
     "/api/start/{show_name}",
     responses={200: {"description": "Running show accepted"}},
@@ -81,7 +80,6 @@ async def get_stop_command() -> Response:
     return status.HTTP_204_NO_CONTENT
 
 
-# TODO Responses
 @app.get(
     "/api/narrations",
     response_model=ShowHistory,
@@ -101,7 +99,6 @@ async def get_current_show():
     return Response("No show running now", status_code=204)
 
 
-# TODO Responses
 @app.get(
     "/api/narrations/{language_tag}",
     responses={
@@ -124,7 +121,6 @@ async def send_narration_file(
     )
 
 
-# TODO Make run
 if __name__ == "__main__":
     uvicorn.run(
         "app:app",
